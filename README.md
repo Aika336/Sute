@@ -7,3 +7,7 @@ This is my attempt to make a sniffer program in java. The program capturing and 
 ## How to work with the project
 
 To deploy the program, clone the repository, open it in intelliJ and include all the files from lib in the project “File”->“Project Structure”->“Modules” and there add the files from lib
+
+## Screenshots
+<img width="1851" height="1080" alt="image" src="https://github.com/user-attachments/assets/45574ad5-4b0d-402e-a748-8ff209bc6eba" />
+
