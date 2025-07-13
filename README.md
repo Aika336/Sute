@@ -9,5 +9,5 @@ This is my attempt to make a sniffer program in java. The program capturing and 
 To deploy the program, clone the repository, open it in intelliJ and include all the files from lib in the project “File”->“Project Structure”->“Modules” and there add the files from lib
 
 ## Screenshots
+<img width="1851" height="1080" alt="image" src="https://github.com/user-attachments/assets/45574ad5-4b0d-402e-a748-8ff209bc6eba" />
 
-![Screenshot]([https://via.placeholder.com/468x300?text=App+Screenshot+Here](https://github.com/Aika336/Sute/blob/main/photo/image.png))
