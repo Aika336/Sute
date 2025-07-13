@@ -1,12 +1,25 @@
+import org.pcap4j.core.NotOpenException;
+import org.pcap4j.core.PcapNativeException;
+
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.plaf.basic.BasicOptionPaneUI;
 import java.awt.*;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+import org.pcap4j.core.*;
 
 public class MainWindow extends JFrame {
     private JPanel buttonPanel;
     private JButton startButton, stopButton, selectDeviceButton;
+    private Sniffer sniffer;
 
-    public MainWindow(int width, int height, String title) {
+    public MainWindow(int width, int height, String title) throws PcapNativeException, NotOpenException, InterruptedException {
+        sniffer = new Sniffer();
         setTitle(title);
         setSize(width, height);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -15,12 +28,18 @@ public class MainWindow extends JFrame {
 
         initButtons();
         initLayout();
+
+        sniffer.device.setNetworkDevice(3);
     }
 
     private void initButtons() {
         startButton = new JButton("Start Capture");
         stopButton = new JButton("Stop Capture");
         selectDeviceButton = new JButton("Select Device");
+
+        startButton.addActionListener(new ButtonProcess());
+        stopButton.addActionListener(new ButtonProcess());
+        selectDeviceButton.addActionListener(new ButtonProcess());
     }
 
     private void initLayout() {
@@ -44,5 +63,19 @@ public class MainWindow extends JFrame {
         buttonPanel.add(buttonsBox);
 
         add(buttonPanel, BorderLayout.WEST);
+    }
+
+    private class ButtonProcess implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            if(event.getSource().equals(startButton)) {
+                sniffer.startProcess();
+                System.out.println(startButton.getText());
+            }else if(event.getSource().equals(stopButton)) {
+                sniffer.stopProcess();
+                System.out.println(stopButton.getText());
+            }else if(event.getSource().equals(selectDeviceButton)) {
+
+            }
+        }
     }
 }

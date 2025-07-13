@@ -11,10 +11,5 @@ class SimpleWindow {
         // Создаём окно
         MainWindow window = new MainWindow(1280, 720, "Sute");
         window.setVisible(true);
-
-        Sniffer cho = new Sniffer();
-        cho.device.setNetworkDevice(3);
-
-        cho.processPackets();
     }
 }

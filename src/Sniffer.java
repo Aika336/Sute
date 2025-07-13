@@ -6,9 +6,10 @@ import org.pcap4j.packet.*;
 import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.namednumber.*;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
-public class Sniffer{
+public class Sniffer {
     public NetworkDevice device;
     public ArrayList<PacketTcp> tcp_packets;
     public ArrayList<PacketUdp> udp_packets;
@@ -35,10 +36,6 @@ public class Sniffer{
         }
     };
 
-    public void processPackets() throws NotOpenException, PcapNativeException, InterruptedException {
-        if(activeProcess) device.handle.loop(-1, listener);
-    }
-
     private void processUdpPacket(IpV4Packet.IpV4Header ipHeader, UdpPacket udp) {
         UdpPacket.UdpHeader udpHeader = udp.getHeader();
         System.out.println(udpHeader);
@@ -53,6 +50,20 @@ public class Sniffer{
         tcp_packets.add(new PacketTcp(tcpHeader, ipHeader));
     }
 
-    public void startProcess() { activeProcess = true; }
-    public void stopProcess() { activeProcess = false; }
+    public void startProcess() {
+        new Thread(() -> {
+           try {
+               device.handle.loop(-1, listener);
+           }catch (NotOpenException | PcapNativeException | InterruptedException e) {
+               e.printStackTrace();
+           }
+        }).start();
+    }
+    public void stopProcess() {
+        try {
+            device.handle.breakLoop();
+        } catch (NotOpenException e) {
+            e.printStackTrace();
+        }
+    }
 }
