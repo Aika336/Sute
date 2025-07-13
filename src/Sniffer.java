@@ -1,26 +1,24 @@
 import org.pcap4j.core.PacketListener;
 import org.pcap4j.packet.IpV4Packet;
-
 import org.pcap4j.core.*;
 import org.pcap4j.packet.*;
-import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.namednumber.*;
 
-import javax.swing.*;
 import java.util.ArrayList;
 
 public class Sniffer {
     public NetworkDevice device;
     public ArrayList<PacketTcp> tcp_packets;
     public ArrayList<PacketUdp> udp_packets;
-    private boolean activeProcess;
+    private ProcessThread processThread;
 
     Sniffer() throws PcapNativeException {
         device = new NetworkDevice();
+        processThread = new ProcessThread(listener, device);
+
         tcp_packets = new ArrayList<>();
         udp_packets = new ArrayList<>();
 
-        activeProcess = false;
     }
 
     private PacketListener listener = packet -> {
@@ -51,19 +49,9 @@ public class Sniffer {
     }
 
     public void startProcess() {
-        new Thread(() -> {
-           try {
-               device.handle.loop(-1, listener);
-           }catch (NotOpenException | PcapNativeException | InterruptedException e) {
-               e.printStackTrace();
-           }
-        }).start();
+        processThread.start();
     }
     public void stopProcess() {
-        try {
-            device.handle.breakLoop();
-        } catch (NotOpenException e) {
-            e.printStackTrace();
-        }
+        processThread.stop();
     }
 }
