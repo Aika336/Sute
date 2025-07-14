@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class NetworkDevice {
     private ArrayList<PcapNetworkInterface> interfaces;
     private PcapNetworkInterface currentDevice;
-    public PcapHandle handle;
+    private PcapHandle handle;
 
     NetworkDevice() throws PcapNativeException {
         interfaces = (ArrayList<PcapNetworkInterface>)Pcaps.findAllDevs();
@@ -13,6 +13,14 @@ public class NetworkDevice {
             System.out.println("No interfaces found!");
             return;
         }
+    }
+
+    public PcapNetworkInterface getCurrentDevice() {
+        return currentDevice;
+    }
+
+    public PcapHandle getHandle() {
+        return handle;
     }
 
     public ArrayList<PcapNetworkInterface> getInterfaces() throws PcapNativeException {

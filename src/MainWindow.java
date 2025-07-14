@@ -1,8 +1,11 @@
 import org.pcap4j.core.NotOpenException;
 import org.pcap4j.core.PcapNativeException;
+import org.pcap4j.core.PcapNetworkInterface;
 
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 
 import java.awt.event.ActionListener;
@@ -27,8 +30,6 @@ public class MainWindow extends JFrame {
 
         initButtons();
         initLayout();
-
-        sniffer.device.setNetworkDevice(3);
     }
 
     private void initButtons() {
@@ -54,7 +55,7 @@ public class MainWindow extends JFrame {
         buttonsBox.add(Box.createVerticalStrut(10));
 
 
-        initDeviceOanel(buttonsBox);
+        initDevicePanel(buttonsBox);
         buttonPanel.add(buttonsBox);
 
         Border line = BorderFactory.createLineBorder(Color.YELLOW, 2);
@@ -65,8 +66,8 @@ public class MainWindow extends JFrame {
         add(buttonPanel, BorderLayout.WEST);
     }
 
-    private void initDeviceOanel(JPanel buttonsBox) throws PcapNativeException {
-        var interfaces = sniffer.device.getInterfaces();
+    private void initDevicePanel(JPanel buttonsBox) throws PcapNativeException {
+        var interfaces = sniffer.getDevice().getInterfaces();
         String[] interfaceNames = new String[interfaces.size()];
 
         for(int i = 0; i < interfaces.size(); i++)
@@ -74,6 +75,15 @@ public class MainWindow extends JFrame {
 
         devices = new JList(interfaceNames);
         devices.setLayoutOrientation(JList.VERTICAL);
+
+        devices.addListSelectionListener(e -> {
+            try {
+                sniffer.getDevice().setNetworkDevice(devices.getSelectedIndex());
+            } catch (PcapNativeException ex) {
+                ex.printStackTrace();
+            }
+        });
+
         buttonsBox.add(devices);
     }
 

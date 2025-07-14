@@ -7,7 +7,7 @@ import org.pcap4j.packet.namednumber.*;
 import java.util.ArrayList;
 
 public class Sniffer {
-    public NetworkDevice device;
+    private NetworkDevice device;
     public ArrayList<PacketTcp> tcp_packets;
     public ArrayList<PacketUdp> udp_packets;
     private ProcessThread processThread;
@@ -19,6 +19,10 @@ public class Sniffer {
         tcp_packets = new ArrayList<>();
         udp_packets = new ArrayList<>();
 
+    }
+
+    public NetworkDevice getDevice() {
+        return device;
     }
 
     private PacketListener listener = packet -> {

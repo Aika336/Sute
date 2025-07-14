@@ -23,7 +23,7 @@ public class ProcessThread {
         activeProcess = true;
         captureProcess = new Thread(() -> {
             try {
-                device.handle.loop(-1, function);
+                device.getHandle().loop(-1, function);
             }catch (InterruptedException e) {
                 System.out.println("Capture interrupted (breakLoop).");
             } catch (PcapNativeException | NotOpenException e) {
@@ -41,7 +41,7 @@ public class ProcessThread {
             return;
 
         try {
-            device.handle.breakLoop();
+            device.getHandle().breakLoop();
         } catch (NotOpenException e) {
             e.printStackTrace();
         }
