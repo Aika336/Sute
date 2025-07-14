@@ -25,7 +25,7 @@ public class ProcessThread {
             try {
                 device.handle.loop(-1, function);
             }catch (InterruptedException e) {
-                System.out.println("[INFO] Capture interrupted (breakLoop).");
+                System.out.println("Capture interrupted (breakLoop).");
             } catch (PcapNativeException | NotOpenException e) {
                 e.printStackTrace();
             } finally {

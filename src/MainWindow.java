@@ -11,10 +11,13 @@ import java.awt.event.ActionEvent;
 
 public class MainWindow extends JFrame {
     private JPanel buttonPanel;
-    private JButton startButton, stopButton, selectDeviceButton;
+    private JButton startButton, stopButton;
     private Sniffer sniffer;
+    private JList devices;
 
     public MainWindow(int width, int height, String title) throws PcapNativeException, NotOpenException, InterruptedException {
+        getContentPane().setBackground(Color.white);
+
         sniffer = new Sniffer();
         setTitle(title);
         setSize(width, height);
@@ -31,34 +34,47 @@ public class MainWindow extends JFrame {
     private void initButtons() {
         startButton = new JButton("Start Capture");
         stopButton = new JButton("Stop Capture");
-        selectDeviceButton = new JButton("Select Device");
 
         startButton.addActionListener(new ButtonProcess());
         stopButton.addActionListener(new ButtonProcess());
-        selectDeviceButton.addActionListener(new ButtonProcess());
     }
 
-    private void initLayout() {
+    private void initLayout() throws PcapNativeException {
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        buttonPanel.setBackground(Color.white);
 
         JPanel buttonsBox = new JPanel();
         buttonsBox.setLayout(new BoxLayout(buttonsBox, BoxLayout.Y_AXIS));
+        buttonsBox.setBackground(Color.white);
 
         buttonsBox.add(startButton);
         buttonsBox.add(Box.createVerticalStrut(10));
         buttonsBox.add(stopButton);
         buttonsBox.add(Box.createVerticalStrut(10));
-        buttonsBox.add(selectDeviceButton);
 
-        Border line = BorderFactory.createLineBorder(Color.CYAN, 2);
+
+        initDeviceOanel(buttonsBox);
+        buttonPanel.add(buttonsBox);
+
+        Border line = BorderFactory.createLineBorder(Color.YELLOW, 2);
         Border margin = new EmptyBorder(10, 10, 10, 10);
         Border compound = new CompoundBorder(line, margin);
         buttonsBox.setBorder(compound);
 
-        buttonPanel.add(buttonsBox);
-
         add(buttonPanel, BorderLayout.WEST);
+    }
+
+    private void initDeviceOanel(JPanel buttonsBox) throws PcapNativeException {
+        var interfaces = sniffer.device.getInterfaces();
+        String[] interfaceNames = new String[interfaces.size()];
+
+        for(int i = 0; i < interfaces.size(); i++)
+            interfaceNames[i] = interfaces.get(i).getDescription();
+
+        devices = new JList(interfaceNames);
+        devices.setLayoutOrientation(JList.VERTICAL);
+        buttonsBox.add(devices);
     }
 
     private class ButtonProcess implements ActionListener {
@@ -67,8 +83,6 @@ public class MainWindow extends JFrame {
                 sniffer.startProcess();
             }else if(event.getSource().equals(stopButton)) {
                 sniffer.stopProcess();
-            }else if(event.getSource().equals(selectDeviceButton)) {
-
             }
         }
     }
