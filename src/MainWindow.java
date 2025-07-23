@@ -4,8 +4,6 @@
 
     import javax.swing.*;
     import javax.swing.border.*;
-    import javax.swing.event.ListSelectionEvent;
-    import javax.swing.event.ListSelectionListener;
     import java.awt.*;
 
     import java.awt.event.ActionListener;
@@ -13,10 +11,10 @@
 
 
     public class MainWindow extends JFrame {
-        private JPanel buttonPanel;
         private JButton startButton, stopButton;
         private Sniffer sniffer;
-        private JScrollPane devicesScroll;
+        private JList<String> devicesList;
+        private JTextArea infoArea;
 
         public MainWindow(int width, int height, String title) throws PcapNativeException, NotOpenException, InterruptedException {
             getContentPane().setBackground(Color.white);
@@ -28,66 +26,69 @@
             setResizable(false);
             setLayout(new BorderLayout());
 
-            initButtons();
-            initDevicePanel();
-            initLayout();
+            add(createLeftPanel(), BorderLayout.WEST);
         }
 
-        private void initButtons() {
-            startButton = new JButton("Start Capture");
-            stopButton = new JButton("Stop Capture");
+        private JPanel createLeftPanel() throws PcapNativeException {
+            JPanel leftPanel = new JPanel();
+            leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+            leftPanel.setPreferredSize(new Dimension(300, getHeight()));
+            leftPanel.setBackground(Color.white);
+            leftPanel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.BLACK, 2),
+                    new EmptyBorder(10, 10, 10, 10)
+            ));
 
+            // Кнопки Start/Stop
+            JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+            buttonRow.setBackground(Color.white);
+            startButton = new JButton("Start");
+            stopButton = new JButton("Stop");
             startButton.addActionListener(new ButtonProcess());
             stopButton.addActionListener(new ButtonProcess());
-        }
+            buttonRow.add(startButton);
+            buttonRow.add(stopButton);
 
-        private void initLayout() throws PcapNativeException {
-            buttonPanel = new JPanel();
-            buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
-            buttonPanel.setBackground(Color.white);
+            // Метка и список интерфейсов
+            JLabel interfaceLabel = new JLabel("Selecting an interface:");
+            interfaceLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            JPanel buttonsBox = new JPanel();
-            buttonsBox.setLayout(new BoxLayout(buttonsBox, BoxLayout.Y_AXIS));
-            buttonsBox.setBackground(Color.white);
-
-            buttonsBox.add(startButton);
-            buttonsBox.add(Box.createVerticalStrut(10));
-            buttonsBox.add(stopButton);
-            buttonsBox.add(Box.createVerticalStrut(10));
-            buttonsBox.add(new JLabel("Selecting an interface:"));
-            buttonsBox.add(Box.createVerticalStrut(10));
-            buttonsBox.add(devicesScroll);
-
-            buttonPanel.add(buttonsBox);
-
-            Border line = BorderFactory.createLineBorder(Color.YELLOW, 2);
-            Border margin = new EmptyBorder(10, 10, 10, 10);
-            Border compound = new CompoundBorder(line, margin);
-            buttonsBox.setBorder(compound);
-
-            add(buttonPanel, BorderLayout.WEST);
-        }
-
-        private void initDevicePanel() throws PcapNativeException {
             var interfaces = sniffer.getDevice().getInterfaces();
             String[] interfaceNames = new String[interfaces.size()];
-
-            for(int i = 0; i < interfaces.size(); i++)
+            for (int i = 0; i < interfaces.size(); i++)
                 interfaceNames[i] = interfaces.get(i).getDescription();
 
-            JList devices = new JList(interfaceNames);
-            devices.setLayoutOrientation(JList.VERTICAL);
-
-            devices.addListSelectionListener(e -> {
+            devicesList = new JList<>(interfaceNames);
+            devicesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            devicesList.setLayoutOrientation(JList.VERTICAL);
+            devicesList.addListSelectionListener(e -> {
                 try {
-                    sniffer.getDevice().setNetworkDevice(devices.getSelectedIndex());
+                    sniffer.getDevice().setNetworkDevice(devicesList.getSelectedIndex());
                 } catch (PcapNativeException ex) {
                     ex.printStackTrace();
                 }
             });
 
-            devicesScroll = new JScrollPane(devices);
-            devicesScroll.setPreferredSize(new Dimension(300, 150));
+            JScrollPane listScroll = new JScrollPane(devicesList);
+            listScroll.setPreferredSize(new Dimension(250, 120));
+
+            // Текстовая область для информации о пакете
+            JLabel infoLabel = new JLabel("Packet information:");
+            infoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            infoArea = new JTextArea(6, 25);
+            infoArea.setEditable(false);
+            JScrollPane infoScroll = new JScrollPane(infoArea);
+
+            // Добавление компонентов по порядку
+            leftPanel.add(buttonRow);
+            leftPanel.add(Box.createVerticalStrut(10));
+            leftPanel.add(interfaceLabel);
+            leftPanel.add(listScroll);
+            leftPanel.add(Box.createVerticalStrut(10));
+            leftPanel.add(infoLabel);
+            leftPanel.add(infoScroll);
+
+            return leftPanel;
         }
 
         private class ButtonProcess implements ActionListener {
