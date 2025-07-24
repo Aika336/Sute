@@ -12,30 +12,36 @@
 
     public class MainWindow extends JFrame {
         private JButton startButton, stopButton;
-        private Sniffer sniffer;
         private JList<String> devicesList;
         private JTextArea infoArea;
+        private JPanel leftPanel;
 
-        public MainWindow(int width, int height, String title) throws PcapNativeException, NotOpenException, InterruptedException {
+        private Sniffer sniffer;
+        private PacketTablePanel packetTablePanel;
+
+        public MainWindow(int width, int height, String title) throws PcapNativeException{
+            packetTablePanel = new PacketTablePanel();
+            sniffer = new Sniffer(packetTablePanel);
+
             getContentPane().setBackground(Color.white);
 
-            sniffer = new Sniffer();
             setTitle(title);
             setSize(width, height);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setResizable(false);
+            setResizable(true);
             setLayout(new BorderLayout());
 
             add(createLeftPanel(), BorderLayout.WEST);
+            add(createTablePanel(), BorderLayout.EAST);
         }
 
         private JPanel createLeftPanel() throws PcapNativeException {
-            JPanel leftPanel = new JPanel();
+            leftPanel = new JPanel();
             leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
             leftPanel.setPreferredSize(new Dimension(300, getHeight()));
             leftPanel.setBackground(Color.white);
             leftPanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(Color.BLACK, 2),
+                    BorderFactory.createLineBorder(Color.BLACK, 1),
                     new EmptyBorder(10, 10, 10, 10)
             ));
 
@@ -75,7 +81,7 @@
             // Текстовая область для информации о пакете
             JLabel infoLabel = new JLabel("Packet information:");
             infoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            infoArea = new JTextArea(6, 25);
+            infoArea = new JTextArea(24, 24);
             infoArea.setEditable(false);
             JScrollPane infoScroll = new JScrollPane(infoArea);
 
@@ -89,6 +95,17 @@
             leftPanel.add(infoScroll);
 
             return leftPanel;
+        }
+
+        private JPanel createTablePanel() {
+            JPanel tablePanel = new JPanel();
+            tablePanel.setPreferredSize(new Dimension(getWidth() - leftPanel.getWidth(), getHeight()));
+
+            JScrollPane scrollPane = new JScrollPane(packetTablePanel);
+            scrollPane.setPreferredSize(new Dimension(getWidth() / 2 - leftPanel.getWidth(), getHeight()));
+            tablePanel.add(scrollPane, BorderLayout.CENTER);
+
+            return tablePanel;
         }
 
         private class ButtonProcess implements ActionListener {

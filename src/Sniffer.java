@@ -8,22 +8,23 @@ import java.util.ArrayList;
 
 public class Sniffer {
     private NetworkDevice device;
-    public ArrayList<PacketTcp> tcp_packets;
-    public ArrayList<PacketUdp> udp_packets;
+    public ArrayList<PachetInfo> packets;
     private ProcessThread processThread;
+    private PacketTablePanel packetTablePanel;
 
-    Sniffer() throws PcapNativeException {
+    Sniffer(PacketTablePanel packetTablePanel) throws PcapNativeException {
+        this.packetTablePanel = packetTablePanel;
         device = new NetworkDevice();
         processThread = new ProcessThread(listener, device);
 
-        tcp_packets = new ArrayList<>();
-        udp_packets = new ArrayList<>();
+        packets = new ArrayList<>();
 
     }
 
     public NetworkDevice getDevice() {
         return device;
     }
+    public ArrayList<PachetInfo> getPackets() { return packets; }
 
     private PacketListener listener = packet -> {
         if(packet.contains(IpV4Packet.class)) {
@@ -40,16 +41,20 @@ public class Sniffer {
 
     private void processUdpPacket(IpV4Packet.IpV4Header ipHeader, UdpPacket udp) {
         UdpPacket.UdpHeader udpHeader = udp.getHeader();
+        PachetInfo pachetInfo = new PachetInfo(udpHeader, ipHeader);
         System.out.println(udpHeader);
 
-        udp_packets.add(new PacketUdp(udpHeader, ipHeader));
+        packets.add(pachetInfo);
+        packetTablePanel.addPacket(pachetInfo);
     }
 
     private void processTcpPacket(IpV4Packet.IpV4Header ipHeader, TcpPacket tcp) {
         TcpPacket.TcpHeader tcpHeader = tcp.getHeader();
+        PachetInfo pachetInfo = new PachetInfo(tcpHeader, ipHeader);
         System.out.println(ipHeader);
 
-        tcp_packets.add(new PacketTcp(tcpHeader, ipHeader));
+        packets.add(pachetInfo);
+        packetTablePanel.addPacket(pachetInfo);
     }
 
     public void startProcess() {
