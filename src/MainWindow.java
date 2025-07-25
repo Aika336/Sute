@@ -32,7 +32,7 @@
             setLayout(new BorderLayout());
 
             add(createLeftPanel(), BorderLayout.WEST);
-            add(createTablePanel(), BorderLayout.EAST);
+            add(createTablePanel(), BorderLayout.CENTER);
         }
 
         private JPanel createLeftPanel() throws PcapNativeException {
@@ -98,7 +98,7 @@
         }
 
         private JPanel createTablePanel() {
-            JPanel tablePanel = new JPanel();
+            JPanel tablePanel = new JPanel(new BorderLayout());
             tablePanel.setPreferredSize(new Dimension(getWidth() - leftPanel.getWidth(), getHeight()));
 
             JScrollPane scrollPane = new JScrollPane(packetTablePanel);
