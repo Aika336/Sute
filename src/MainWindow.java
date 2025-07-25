@@ -118,8 +118,12 @@ public class MainWindow extends JFrame {
         public void actionPerformed(ActionEvent event) {
             if(event.getSource().equals(startButton)) {
                 sniffer.startProcess();
+                startButton.setEnabled(false);
+                stopButton.setEnabled(true);
             }else if(event.getSource().equals(stopButton)) {
                 sniffer.stopProcess();
+                startButton.setEnabled(true);
+                stopButton.setEnabled(false);
             }
         }
     }
