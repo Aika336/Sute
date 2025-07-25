@@ -42,7 +42,6 @@ public class Sniffer {
     private void processUdpPacket(IpV4Packet.IpV4Header ipHeader, UdpPacket udp) {
         UdpPacket.UdpHeader udpHeader = udp.getHeader();
         PachetInfo pachetInfo = new PachetInfo(udpHeader, ipHeader);
-        System.out.println(udpHeader);
 
         packets.add(pachetInfo);
         packetTablePanel.addPacket(pachetInfo);
@@ -51,7 +50,6 @@ public class Sniffer {
     private void processTcpPacket(IpV4Packet.IpV4Header ipHeader, TcpPacket tcp) {
         TcpPacket.TcpHeader tcpHeader = tcp.getHeader();
         PachetInfo pachetInfo = new PachetInfo(tcpHeader, ipHeader);
-        System.out.println(ipHeader);
 
         packets.add(pachetInfo);
         packetTablePanel.addPacket(pachetInfo);

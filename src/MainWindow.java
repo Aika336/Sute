@@ -17,7 +17,7 @@ public class MainWindow extends JFrame {
     private PacketTablePanel packetTablePanel;
 
     public MainWindow(int width, int height, String title) throws PcapNativeException{
-        packetTablePanel = new PacketTablePanel();
+        packetTablePanel = new PacketTablePanel(this);
         sniffer = new Sniffer(packetTablePanel);
 
         getContentPane().setBackground(Color.white);
@@ -102,7 +102,16 @@ public class MainWindow extends JFrame {
         scrollPane.setPreferredSize(new Dimension(getWidth() / 2 - leftPanel.getWidth(), getHeight()));
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 
+
         return tablePanel;
+    }
+
+    public JTextArea getTextArea() {
+        return infoArea;
+    }
+
+    public Sniffer getSniffer() {
+        return sniffer;
     }
 
     private class ButtonProcess implements ActionListener {
