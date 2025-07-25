@@ -1,3 +1,4 @@
+import org.pcap4j.core.NotOpenException;
 import org.pcap4j.core.PcapNativeException;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -43,14 +44,34 @@ public class MainWindow extends JFrame {
         ));
 
         // Кнопки Start/Stop
-        JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
         buttonRow.setBackground(Color.white);
         startButton = new JButton("Start");
         stopButton = new JButton("Stop");
         startButton.addActionListener(new ButtonProcess());
         stopButton.addActionListener(new ButtonProcess());
+        startButton.setEnabled(false);
+        stopButton.setEnabled(false);
         buttonRow.add(startButton);
         buttonRow.add(stopButton);
+
+        // Фильтры
+        JPanel filterRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        JLabel filter = new JLabel("Filters: ");
+        JTextField filterText = new JTextField(16);
+        filterText.addActionListener(new ButtonProcess() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    System.out.println(filterText.getText());
+                    sniffer.setFilters(filterText.getText());
+                } catch (NotOpenException | PcapNativeException  ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+        });
+        filterRow.add(filter, BorderLayout.WEST);
+        filterRow.add(filterText, BorderLayout.CENTER);
 
         // Метка и список интерфейсов
         JLabel interfaceLabel = new JLabel("Selecting an interface:");
@@ -67,6 +88,8 @@ public class MainWindow extends JFrame {
         devicesList.addListSelectionListener(e -> {
             try {
                 sniffer.getDevice().setNetworkDevice(devicesList.getSelectedIndex());
+                startButton.setEnabled(true);
+                stopButton.setEnabled(true);
             } catch (PcapNativeException ex) {
                 ex.printStackTrace();
             }
@@ -84,6 +107,8 @@ public class MainWindow extends JFrame {
 
             // Добавление компонентов по порядку
         leftPanel.add(buttonRow);
+        leftPanel.add(Box.createVerticalStrut(10));
+        leftPanel.add(filterRow);
         leftPanel.add(Box.createVerticalStrut(10));
         leftPanel.add(interfaceLabel);
         leftPanel.add(listScroll);

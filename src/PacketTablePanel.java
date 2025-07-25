@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalTime;
@@ -25,8 +26,11 @@ public class PacketTablePanel extends JTable {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                var info = window.getSniffer().getPackets().get(getSelectedRow());
-                window.getTextArea().setText(info.getIp4Header().toString());
+                var packet = window.getSniffer().getPackets().get(getSelectedRow());
+                var information = packet.isTcpPakcet() ?
+                        packet.getTcpHeader() :
+                        packet.getUdpHeader();
+                window.getTextArea().setText(information.toString() + packet.getIp4Header());
             }
         });
     }

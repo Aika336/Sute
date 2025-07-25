@@ -25,6 +25,7 @@ public class Sniffer {
         return device;
     }
     public ArrayList<PachetInfo> getPackets() { return packets; }
+    public void setFilters(String str) throws NotOpenException, PcapNativeException { device.getHandle().setFilter(str, BpfProgram.BpfCompileMode.OPTIMIZE);}
 
     private PacketListener listener = packet -> {
         if(packet.contains(IpV4Packet.class)) {
@@ -54,6 +55,7 @@ public class Sniffer {
         packets.add(pachetInfo);
         packetTablePanel.addPacket(pachetInfo);
     }
+
 
     public void startProcess() {
         processThread.start();

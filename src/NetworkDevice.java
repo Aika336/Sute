@@ -23,7 +23,7 @@ public class NetworkDevice {
         return handle;
     }
 
-    public ArrayList<PcapNetworkInterface> getInterfaces() throws PcapNativeException {
+    public ArrayList<PcapNetworkInterface> getInterfaces() {
         return interfaces;
     }
 
@@ -34,9 +34,5 @@ public class NetworkDevice {
             return true;
         }else
             return false;
-    }
-
-    public void setFilters(String filters) throws NotOpenException, PcapNativeException {
-        handle.setFilter(filters, BpfProgram.BpfCompileMode.OPTIMIZE);
     }
 }
